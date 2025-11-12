@@ -14,16 +14,468 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      account_balances: {
+        Row: {
+          account_active_since: string | null
+          id: string
+          main_balance: number | null
+          profit_balance: number | null
+          total_deposited: number | null
+          total_withdrawn: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          account_active_since?: string | null
+          id?: string
+          main_balance?: number | null
+          profit_balance?: number | null
+          total_deposited?: number | null
+          total_withdrawn?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          account_active_since?: string | null
+          id?: string
+          main_balance?: number | null
+          profit_balance?: number | null
+          total_deposited?: number | null
+          total_withdrawn?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      activity_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          ip_address: string | null
+          location: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          location?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          location?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      deposits: {
+        Row: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string | null
+          id: string
+          payment_method: string | null
+          proof_url: string | null
+          rejection_reason: string | null
+          status: Database["public"]["Enums"]["transaction_status"] | null
+          transaction_hash: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          payment_method?: string | null
+          proof_url?: string | null
+          rejection_reason?: string | null
+          status?: Database["public"]["Enums"]["transaction_status"] | null
+          transaction_hash?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          payment_method?: string | null
+          proof_url?: string | null
+          rejection_reason?: string | null
+          status?: Database["public"]["Enums"]["transaction_status"] | null
+          transaction_hash?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      investment_plans: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          duration_days: number
+          id: string
+          is_active: boolean | null
+          max_amount: number | null
+          min_amount: number
+          name: string
+          roi_percentage: number
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          duration_days: number
+          id?: string
+          is_active?: boolean | null
+          max_amount?: number | null
+          min_amount: number
+          name: string
+          roi_percentage: number
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          duration_days?: number
+          id?: string
+          is_active?: boolean | null
+          max_amount?: number | null
+          min_amount?: number
+          name?: string
+          roi_percentage?: number
+        }
+        Relationships: []
+      }
+      investments: {
+        Row: {
+          amount: number
+          completed_at: string | null
+          created_at: string | null
+          end_date: string
+          expected_profit: number
+          id: string
+          plan_id: string
+          start_date: string | null
+          status: Database["public"]["Enums"]["investment_status"] | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          completed_at?: string | null
+          created_at?: string | null
+          end_date: string
+          expected_profit: number
+          id?: string
+          plan_id: string
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["investment_status"] | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          completed_at?: string | null
+          created_at?: string | null
+          end_date?: string
+          expected_profit?: number
+          id?: string
+          plan_id?: string
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["investment_status"] | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investments_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "investment_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kyc_documents: {
+        Row: {
+          id: string
+          id_document_url: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          selfie_url: string | null
+          status: Database["public"]["Enums"]["kyc_status"] | null
+          submitted_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          id_document_url?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          selfie_url?: string | null
+          status?: Database["public"]["Enums"]["kyc_status"] | null
+          submitted_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          id_document_url?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          selfie_url?: string | null
+          status?: Database["public"]["Enums"]["kyc_status"] | null
+          submitted_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          country: string | null
+          created_at: string | null
+          date_of_birth: string | null
+          email: string
+          full_name: string
+          id: string
+          phone_number: string | null
+          profile_picture: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          email: string
+          full_name: string
+          id?: string
+          phone_number?: string | null
+          profile_picture?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          phone_number?: string | null
+          profile_picture?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          bonus_amount: number | null
+          bonus_paid: boolean | null
+          created_at: string | null
+          id: string
+          referred_id: string
+          referrer_id: string
+        }
+        Insert: {
+          bonus_amount?: number | null
+          bonus_paid?: boolean | null
+          created_at?: string | null
+          id?: string
+          referred_id: string
+          referrer_id: string
+        }
+        Update: {
+          bonus_amount?: number | null
+          bonus_paid?: boolean | null
+          created_at?: string | null
+          id?: string
+          referred_id?: string
+          referrer_id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          created_at: string | null
+          description: string | null
+          id: string
+          reference_id: string | null
+          type: Database["public"]["Enums"]["transaction_type"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          type: Database["public"]["Enums"]["transaction_type"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          type?: Database["public"]["Enums"]["transaction_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      website_settings: {
+        Row: {
+          id: string
+          key: string
+          updated_at: string | null
+          value: string
+        }
+        Insert: {
+          id?: string
+          key: string
+          updated_at?: string | null
+          value: string
+        }
+        Update: {
+          id?: string
+          key?: string
+          updated_at?: string | null
+          value?: string
+        }
+        Relationships: []
+      }
+      withdrawal_accounts: {
+        Row: {
+          account_details: Json
+          account_name: string | null
+          account_type: Database["public"]["Enums"]["account_type"]
+          created_at: string | null
+          id: string
+          is_default: boolean | null
+          user_id: string
+        }
+        Insert: {
+          account_details: Json
+          account_name?: string | null
+          account_type: Database["public"]["Enums"]["account_type"]
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          user_id: string
+        }
+        Update: {
+          account_details?: Json
+          account_name?: string | null
+          account_type?: Database["public"]["Enums"]["account_type"]
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      withdrawals: {
+        Row: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string | null
+          id: string
+          rejection_reason: string | null
+          status: Database["public"]["Enums"]["transaction_status"] | null
+          user_id: string
+          withdrawal_account_id: string | null
+        }
+        Insert: {
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          rejection_reason?: string | null
+          status?: Database["public"]["Enums"]["transaction_status"] | null
+          user_id: string
+          withdrawal_account_id?: string | null
+        }
+        Update: {
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          rejection_reason?: string | null
+          status?: Database["public"]["Enums"]["transaction_status"] | null
+          user_id?: string
+          withdrawal_account_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawals_withdrawal_account_id_fkey"
+            columns: ["withdrawal_account_id"]
+            isOneToOne: false
+            referencedRelation: "withdrawal_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      account_type: "bank" | "crypto" | "paypal" | "payoneer"
+      app_role: "user" | "admin"
+      investment_status: "active" | "completed" | "cancelled"
+      kyc_status: "pending" | "under_review" | "approved" | "rejected"
+      transaction_status: "pending" | "approved" | "rejected"
+      transaction_type:
+        | "deposit"
+        | "withdrawal"
+        | "investment"
+        | "profit"
+        | "bonus"
+        | "referral"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +602,20 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      account_type: ["bank", "crypto", "paypal", "payoneer"],
+      app_role: ["user", "admin"],
+      investment_status: ["active", "completed", "cancelled"],
+      kyc_status: ["pending", "under_review", "approved", "rejected"],
+      transaction_status: ["pending", "approved", "rejected"],
+      transaction_type: [
+        "deposit",
+        "withdrawal",
+        "investment",
+        "profit",
+        "bonus",
+        "referral",
+      ],
+    },
   },
 } as const
