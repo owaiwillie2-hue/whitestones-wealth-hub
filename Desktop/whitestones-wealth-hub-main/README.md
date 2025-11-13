@@ -1,53 +1,190 @@
-# Welcome to your Lovable project
+# Whitestones Markets - Investment Platform
 
-## Project info
+A modern investment platform built with React, TypeScript, Vite, and Tailwind CSS. Features cryptocurrency trading, real estate investments, and more.
 
-**URL**: https://lovable.dev/projects/9a62c248-ed91-4a6e-8c6f-7612b992958c
+## 🚀 Features
 
-## How can I edit this code?
+- **Bitcoin Explainer Video** - Learn about cryptocurrency with embedded YouTube content
+- **Company Information Pages** - Detailed pages for each investment category
+- **User Dashboard** - Complete investment management interface
+- **Authentication** - Secure login and signup with Supabase
+- **Real-time Data** - Integration with financial APIs
+- **Mobile Responsive** - Fully optimized for all devices
+- **Dark/Light Mode** - Theme support
 
-There are several ways of editing your application.
+## 📋 Investment Options
 
-**Use Lovable**
+- 🪙 Cryptocurrency Trading
+- 🏢 Real Estate Investment
+- ⛽ Oil & Gas
+- 🖼️ NFT Marketplace
+- 🏦 Retirement Planning
+- 💰 Investment Loans
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/9a62c248-ed91-4a6e-8c6f-7612b992958c) and start prompting.
+## 🛠️ Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend:** React 18, TypeScript, Vite
+- **Styling:** Tailwind CSS, Shadcn UI components
+- **Backend:** Supabase (Auth, Database)
+- **State Management:** React Query (TanStack Query)
+- **Routing:** React Router v6
+- **Build Tool:** Vite
+- **Deployment:** Vercel
 
-**Use your preferred IDE**
+## 📦 Installation
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+```bash
+# Clone the repository
+git clone https://github.com/owaiwillie2-hue/whitestonesmarketng.git
+cd whitestonesmarketng
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+# Install dependencies
+npm install
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+# Set up environment variables
+cp .env.example .env.local
+# Add your Supabase credentials to .env.local
 ```
 
-**Edit a file directly in GitHub**
+## 🚀 Development
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# Start development server
+npm run dev
 
-**Use GitHub Codespaces**
+# The app will be available at http://localhost:8080
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
+## 🏗️ Build
+
+```bash
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## 📁 Project Structure
+
+```
+src/
+├── components/
+│   ├── landing/          # Landing page components
+│   ├── dashboard/        # Dashboard components
+│   └── ui/              # Reusable UI components
+├── pages/
+│   ├── dashboard/       # Dashboard pages
+│   ├── company/         # Company info pages
+│   ├── Index.tsx        # Home page
+│   ├── Login.tsx        # Login page
+│   └── Signup.tsx       # Registration page
+├── hooks/               # Custom React hooks
+├── contexts/            # Context providers
+├── integrations/        # Third-party integrations (Supabase)
+├── utils/               # Utility functions
+└── App.tsx              # Main app component
+```
+
+## 🔑 Key Routes
+
+| Route | Description |
+|-------|-------------|
+| `/` | Home page |
+| `/login` | User login |
+| `/signup` | User registration |
+| `/dashboard` | User dashboard |
+| `/cryptocurrencies` | Bitcoin explainer & crypto info |
+| `/company/investments` | Investment services |
+| `/company/real-estate` | Real estate opportunities |
+| `/company/nft` | NFT marketplace info |
+| `/admin/login` | Admin login (Ctrl+Alt+A) |
+
+## 🔐 Secret Admin Access
+
+Press **Ctrl + Alt + A** anywhere on the site to access the admin login page.
+
+## 🗂️ Recent Features
+
+### Added in v1.0
+
+✅ YouTube video embed for Bitcoin explainer  
+✅ 9 company information pages  
+✅ Routing number field in bank account form  
+✅ Secret admin keyboard shortcut  
+✅ Vercel deployment configuration  
+✅ Optimized code splitting for performance  
+
+## 🚀 Deployment
+
+### Deploy to Vercel
+
+```bash
+# One-click deploy (recommended)
+# Visit https://vercel.com/new and import this repository
+```
+
+Or use the Vercel CLI:
+
+```bash
+npm install -g vercel
+vercel
+```
+
+**Important:** The project includes `vercel.json` configuration with proper routing setup for client-side navigation.
+
+## 🔧 Environment Variables
+
+Create a `.env.local` file with:
+
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_key
+```
+
+## 📊 Performance Optimizations
+
+- **Code Splitting:** Vendor chunks, UI components, and Supabase separated
+- **Chunk Size Limit:** Set to 1MB for better performance
+- **Build Optimization:** Minified production builds with Vite
+
+## 🐛 Troubleshooting
+
+### Routes show "Page Not Found"
+- Ensure `vercel.json` and `public/_redirects` are deployed
+- Clear browser cache and redeploy on Vercel
+
+### Build fails with missing dependencies
+- Run `npm install` again
+- Check `.npmrc` has `legacy-peer-deps=true`
+
+### Supabase connection issues
+- Verify environment variables are set correctly
+- Check Supabase project credentials
+
+## 📚 Documentation
+
+- [Vercel Deployment Guide](./VERCEL_DEPLOYMENT.md)
+- [GitHub Push Summary](./GITHUB_PUSH_SUMMARY.md)
+
+## 👥 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is private and owned by Whitestones Markets.
+
+## 📧 Support
+
+For issues or questions, please contact the development team.
+
+---
+
+**Repository:** https://github.com/owaiwillie2-hue/whitestonesmarketng  
+**Live Demo:** Deployed on Vercel
+
+**Last Updated:** November 13, 2025
 - Edit files directly within the Codespace and commit and push your changes once you're done.
 
 ## What technologies are used for this project?
