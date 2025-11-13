@@ -3,7 +3,6 @@ import logo from "@/assets/logo.png";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export const Footer = () => {
@@ -51,13 +50,8 @@ export const Footer = () => {
           <div>
             <h4 className="font-bold text-lg mb-4">Quick Links</h4>
             <ul className="space-y-2">
-              <li>
-                <Link to="/company/about" className="text-primary-foreground/80 hover:text-primary-foreground transition-fast">About Us</Link>
-              </li>
-              <li>
-                {/* Navigate to home with hash so landing page scrolls to investments */}
-                <Link to={{ pathname: '/', hash: '#investments' } as any} className="text-primary-foreground/80 hover:text-primary-foreground transition-fast">Investment Options</Link>
-              </li>
+              <li><a href="#about" className="text-primary-foreground/80 hover:text-primary-foreground transition-fast">About Us</a></li>
+              <li><a href="#investments" className="text-primary-foreground/80 hover:text-primary-foreground transition-fast">Investment Options</a></li>
               <li><Link to="/signup" className="text-primary-foreground/80 hover:text-primary-foreground transition-fast">Open Account</Link></li>
               <li><Link to="/login" className="text-primary-foreground/80 hover:text-primary-foreground transition-fast">Login</Link></li>
             </ul>
@@ -120,7 +114,6 @@ export const Footer = () => {
             </p>
             <div className="flex items-center space-x-4">
               <span className="text-primary-foreground/60 text-xs">Designed with care.</span>
-              <ThemeToggle />
             </div>
           </div>
         </div>
