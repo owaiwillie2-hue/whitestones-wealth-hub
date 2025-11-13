@@ -79,10 +79,23 @@ npm run build
 
 ## If Still Not Working:
 
-Open Browser DevTools (F12) → Console Tab and tell me:
-1. Are there any red error messages? What do they say?
-2. What is the actual URL showing? (e.g., whitestonesmarkets.netlify.app)
-3. Is the page completely blank or showing some content?
+1. **Hard refresh the page**: Press **Ctrl+Shift+R** (Windows) or **Cmd+Shift+R** (Mac)
+2. **Wait 2-3 minutes** after you see the Tidio chat button - Netlify might still be deploying
+3. **Open Browser DevTools** (Press **F12**)
+4. Go to **Console Tab** and tell me exactly what you see:
+   - Look for any red error messages (copy the full message)
+   - You should see "App loading..." message
+   - Check if it says any error about Supabase or React
+5. Go to **Network Tab**:
+   - Reload the page (F5)
+   - Look for any failed requests (red status codes like 404, 500)
+   - Check if `/assets/index-*.js` files loaded successfully
+
+### What to tell me:
+1. Are there any red error messages in Console? Copy them exactly.
+2. Do you see "App loading..." message in the console?
+3. Do all files in Network tab show green (200 status) or are some red?
+4. What is the actual URL? (e.g., whitestonesmarkets.netlify.app)
 
 ---
 
