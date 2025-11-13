@@ -26,6 +26,15 @@
 
   <body>
     <div id="root"></div>
+    <script>
+      window.addEventListener('error', (event) => {
+        console.error('Global error:', event.error);
+      });
+      window.addEventListener('unhandledrejection', (event) => {
+        console.error('Unhandled promise rejection:', event.reason);
+      });
+      console.log('App loading...');
+    </script>
     <script src="//code.tidio.co/aultm8ulq2lvoued99ipgc5mony8kxc9.js" async></script>
   </body>
 </html>
