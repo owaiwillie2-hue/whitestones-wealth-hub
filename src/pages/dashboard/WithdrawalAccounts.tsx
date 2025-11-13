@@ -86,30 +86,54 @@ const WithdrawalAccounts = () => {
 
   const BankForm = () => {
     const [formData, setFormData] = useState<any>({});
+    const isFormValid = formData.name && formData.accountNumber && formData.bankName && formData.routingNumber;
 
     return (
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label>Account Holder Name</Label>
-          <Input onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+          <Label><span className="text-red-500">*</span> Account Holder Name</Label>
+          <Input 
+            placeholder="Full name"
+            required 
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
+          />
         </div>
         <div className="space-y-2">
-          <Label>Account Number</Label>
-          <Input onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })} />
+          <Label><span className="text-red-500">*</span> Account Number</Label>
+          <Input 
+            placeholder="Account number"
+            required 
+            onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })} 
+          />
         </div>
         <div className="space-y-2">
-          <Label>Routing Number</Label>
-          <Input onChange={(e) => setFormData({ ...formData, routingNumber: e.target.value })} />
+          <Label><span className="text-red-500">*</span> Routing Number</Label>
+          <Input 
+            placeholder="Routing number"
+            required 
+            onChange={(e) => setFormData({ ...formData, routingNumber: e.target.value })} 
+          />
         </div>
         <div className="space-y-2">
-          <Label>Bank Name</Label>
-          <Input onChange={(e) => setFormData({ ...formData, bankName: e.target.value })} />
+          <Label><span className="text-red-500">*</span> Bank Name</Label>
+          <Input 
+            placeholder="Bank name"
+            required 
+            onChange={(e) => setFormData({ ...formData, bankName: e.target.value })} 
+          />
         </div>
         <div className="space-y-2">
           <Label>Swift Code/BIC</Label>
-          <Input onChange={(e) => setFormData({ ...formData, swiftCode: e.target.value })} />
+          <Input 
+            placeholder="Optional: SWIFT code or BIC"
+            onChange={(e) => setFormData({ ...formData, swiftCode: e.target.value })} 
+          />
         </div>
-        <Button onClick={() => handleAddAccount('bank', formData)} className="w-full">
+        <Button 
+          onClick={() => handleAddAccount('bank', formData)} 
+          className="w-full"
+          disabled={!isFormValid}
+        >
           Add Account
         </Button>
       </div>
@@ -118,13 +142,15 @@ const WithdrawalAccounts = () => {
 
   const CryptoForm = () => {
     const [formData, setFormData] = useState<any>({});
+    const isFormValid = formData.name && formData.address;
 
     return (
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label>Wallet Name</Label>
+          <Label><span className="text-red-500">*</span> Wallet Name</Label>
           <select
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md dark:bg-slate-800 dark:border-slate-700"
+            required
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           >
             <option value="">Select wallet</option>
@@ -134,11 +160,45 @@ const WithdrawalAccounts = () => {
           </select>
         </div>
         <div className="space-y-2">
-          <Label>Wallet Address</Label>
-          <Input onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
+          <Label><span className="text-red-500">*</span> Wallet Address</Label>
+          <Input 
+            placeholder="Wallet address"
+            required 
+            onChange={(e) => setFormData({ ...formData, address: e.target.value })} 
+          />
         </div>
-        <Button onClick={() => handleAddAccount('crypto', formData)} className="w-full">
+        <Button 
+          onClick={() => handleAddAccount('crypto', formData)} 
+          className="w-full"
+          disabled={!isFormValid}
+        >
           Add Wallet
+        </Button>
+      </div>
+    );
+  };
+
+  const PayPalForm = () => {
+    const [formData, setFormData] = useState<any>({});
+    const isFormValid = formData.email;
+
+    return (
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label><span className="text-red-500">*</span> PayPal Email</Label>
+          <Input 
+            type="email"
+            placeholder="your.email@paypal.com"
+            required
+            onChange={(e) => setFormData({ ...formData, email: e.target.value, name: e.target.value })} 
+          />
+        </div>
+        <Button 
+          onClick={() => handleAddAccount('paypal', formData)} 
+          className="w-full"
+          disabled={!isFormValid}
+        >
+          Add PayPal
         </Button>
       </div>
     );
@@ -174,10 +234,7 @@ const WithdrawalAccounts = () => {
                     <CryptoForm />
                   </TabsContent>
                   <TabsContent value="paypal">
-                    <div className="space-y-4">
-                      <Input placeholder="PayPal Email" />
-                      <Button className="w-full">Add PayPal</Button>
-                    </div>
+                    <PayPalForm />
                   </TabsContent>
                 </Tabs>
               </DialogContent>

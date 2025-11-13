@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
-import { LogOut, Users, DollarSign, FileCheck, Settings, TrendingUp, BarChart3, AlertCircle } from 'lucide-react';
+import { LogOut, Users, DollarSign, FileCheck, Settings, TrendingUp, BarChart3, AlertCircle, Menu, X, Moon, Sun } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTheme } from '@/contexts/ThemeContext';
 import AdminUsersTab from '@/components/admin/AdminUsersTab';
 import AdminDepositsTab from '@/components/admin/AdminDepositsTab';
 import AdminWithdrawalsTab from '@/components/admin/AdminWithdrawalsTab';
@@ -16,9 +16,12 @@ import AdminReferralsTab from '@/components/admin/AdminReferralsTab';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('analytics');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalDeposits: 0,
@@ -27,6 +30,16 @@ const AdminDashboard = () => {
     pendingWithdrawals: 0,
     pendingKYC: 0,
   });
+
+  const menuItems = [
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'users', label: 'Users', icon: Users },
+    { id: 'deposits', label: 'Deposits', icon: DollarSign },
+    { id: 'withdrawals', label: 'Withdrawals', icon: TrendingUp },
+    { id: 'kyc', label: 'KYC', icon: FileCheck },
+    { id: 'referrals', label: 'Referrals', icon: Users },
+    { id: 'settings', label: 'Settings', icon: Settings },
+  ];
 
   useEffect(() => {
     checkAdminAccess();
@@ -42,7 +55,6 @@ const AdminDashboard = () => {
 
       setUser(user);
 
-      // Check if user is admin
       const { data: roleData } = await supabase
         .rpc('has_role', { _user_id: user.id, _role: 'admin' });
 
@@ -65,37 +77,31 @@ const AdminDashboard = () => {
 
   const fetchStats = async () => {
     try {
-      // Total users
       const { count: userCount } = await supabase
         .from('profiles')
         .select('*', { count: 'exact', head: true });
 
-      // Total deposits (approved)
       const { count: depositCount } = await supabase
         .from('deposits')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'approved');
 
-      // Total invested
       const { data: investments } = await supabase
         .from('investments')
         .select('amount');
 
       const totalInvested = investments?.reduce((sum, inv) => sum + Number(inv.amount), 0) || 0;
 
-      // Pending deposits
       const { count: pendingDeposits } = await supabase
         .from('deposits')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'pending');
 
-      // Pending withdrawals
       const { count: pendingWithdrawals } = await supabase
         .from('withdrawals')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'pending');
 
-      // Pending KYC
       const { count: pendingKYC } = await supabase
         .from('kyc_documents')
         .select('*', { count: 'exact', head: true })
@@ -136,16 +142,30 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900">
-      {/* Header */}
+    <div className="min-h-screen bg-slate-900 flex flex-col">
       <div className="bg-slate-800 border-b border-slate-700 p-6">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
-            <p className="text-slate-400 mt-1">Whitestones Markets Management Portal</p>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="text-white hover:bg-slate-700 p-2 rounded-lg transition"
+            >
+              {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+            <div>
+              <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+              <p className="text-slate-400 mt-1">Whitestones Markets Management Portal</p>
+            </div>
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-slate-300">{user?.email}</span>
+            <button
+              onClick={toggleTheme}
+              className="text-slate-300 hover:bg-slate-700 p-2 rounded-lg transition"
+              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            </button>
             <Button onClick={handleLogout} variant="destructive" className="flex items-center gap-2">
               <LogOut className="w-4 h-4" />
               Logout
@@ -154,128 +174,118 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-slate-800 border-slate-700">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-slate-400 text-sm">Total Users</p>
-                  <p className="text-3xl font-bold text-white">{stats.totalUsers}</p>
-                </div>
-                <Users className="w-8 h-8 text-blue-400" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800 border-slate-700">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-slate-400 text-sm">Pending Deposits</p>
-                  <p className="text-3xl font-bold text-yellow-400">{stats.pendingDeposits}</p>
-                </div>
-                <AlertCircle className="w-8 h-8 text-yellow-400" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800 border-slate-700">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-slate-400 text-sm">Pending Withdrawals</p>
-                  <p className="text-3xl font-bold text-yellow-400">{stats.pendingWithdrawals}</p>
-                </div>
-                <AlertCircle className="w-8 h-8 text-yellow-400" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800 border-slate-700">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-slate-400 text-sm">Pending KYC</p>
-                  <p className="text-3xl font-bold text-red-400">{stats.pendingKYC}</p>
-                </div>
-                <FileCheck className="w-8 h-8 text-red-400" />
-              </div>
-            </CardContent>
-          </Card>
+      <div className="flex flex-1 overflow-hidden">
+        <div
+          className={`bg-slate-800 border-r border-slate-700 transition-all duration-300 ${
+            sidebarOpen ? 'w-64' : 'w-0'
+          } overflow-hidden`}
+        >
+          <nav className="p-4 space-y-2">
+            <h2 className="text-white text-lg font-semibold px-4 py-2 mb-4">Management Tools</h2>
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                    activeTab === item.id
+                      ? 'bg-blue-600 text-white'
+                      : 'text-slate-300 hover:bg-slate-700'
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span className="font-medium">{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Tabs */}
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="text-white">Management Tools</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="analytics" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 bg-slate-700">
-                <TabsTrigger value="analytics" className="flex items-center gap-2 text-xs">
-                  <BarChart3 className="w-4 h-4" />
-                  <span className="hidden sm:inline">Analytics</span>
-                </TabsTrigger>
-                <TabsTrigger value="users" className="flex items-center gap-2 text-xs">
-                  <Users className="w-4 h-4" />
-                  <span className="hidden sm:inline">Users</span>
-                </TabsTrigger>
-                <TabsTrigger value="deposits" className="flex items-center gap-2 text-xs">
-                  <DollarSign className="w-4 h-4" />
-                  <span className="hidden sm:inline">Deposits</span>
-                </TabsTrigger>
-                <TabsTrigger value="withdrawals" className="flex items-center gap-2 text-xs">
-                  <TrendingUp className="w-4 h-4" />
-                  <span className="hidden sm:inline">Withdrawals</span>
-                </TabsTrigger>
-                <TabsTrigger value="kyc" className="flex items-center gap-2 text-xs">
-                  <FileCheck className="w-4 h-4" />
-                  <span className="hidden sm:inline">KYC</span>
-                </TabsTrigger>
-                <TabsTrigger value="referrals" className="flex items-center gap-2 text-xs">
-                  <Users className="w-4 h-4" />
-                  <span className="hidden sm:inline">Referrals</span>
-                </TabsTrigger>
-                <TabsTrigger value="settings" className="flex items-center gap-2 text-xs">
-                  <Settings className="w-4 h-4" />
-                  <span className="hidden sm:inline">Settings</span>
-                </TabsTrigger>
-              </TabsList>
+        <div className="flex-1 overflow-auto">
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <Card className="bg-slate-800 border-slate-700">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-slate-400 text-sm">Total Users</p>
+                      <p className="text-3xl font-bold text-white">{stats.totalUsers}</p>
+                    </div>
+                    <Users className="w-8 h-8 text-blue-400" />
+                  </div>
+                </CardContent>
+              </Card>
 
-              <div className="mt-6">
-                <TabsContent value="analytics" className="mt-4">
+              <Card className="bg-slate-800 border-slate-700">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-slate-400 text-sm">Pending Deposits</p>
+                      <p className="text-3xl font-bold text-yellow-400">{stats.pendingDeposits}</p>
+                    </div>
+                    <AlertCircle className="w-8 h-8 text-yellow-400" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-800 border-slate-700">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-slate-400 text-sm">Pending Withdrawals</p>
+                      <p className="text-3xl font-bold text-yellow-400">{stats.pendingWithdrawals}</p>
+                    </div>
+                    <AlertCircle className="w-8 h-8 text-yellow-400" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-800 border-slate-700">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-slate-400 text-sm">Pending KYC</p>
+                      <p className="text-3xl font-bold text-red-400">{stats.pendingKYC}</p>
+                    </div>
+                    <FileCheck className="w-8 h-8 text-red-400" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white text-2xl">
+                  {menuItems.find(item => item.id === activeTab)?.label || 'Analytics'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {activeTab === 'analytics' && (
                   <AdminAnalyticsTab stats={stats} onStatsUpdate={fetchStats} />
-                </TabsContent>
-
-                <TabsContent value="users" className="mt-4">
+                )}
+                {activeTab === 'users' && (
                   <AdminUsersTab onUpdate={fetchStats} />
-                </TabsContent>
-
-                <TabsContent value="deposits" className="mt-4">
+                )}
+                {activeTab === 'deposits' && (
                   <AdminDepositsTab onUpdate={fetchStats} />
-                </TabsContent>
-
-                <TabsContent value="withdrawals" className="mt-4">
+                )}
+                {activeTab === 'withdrawals' && (
                   <AdminWithdrawalsTab onUpdate={fetchStats} />
-                </TabsContent>
-
-                <TabsContent value="kyc" className="mt-4">
+                )}
+                {activeTab === 'kyc' && (
                   <AdminKYCTab onUpdate={fetchStats} />
-                </TabsContent>
-
-                <TabsContent value="referrals" className="mt-4">
+                )}
+                {activeTab === 'referrals' && (
                   <AdminReferralsTab />
-                </TabsContent>
-
-                <TabsContent value="settings" className="mt-4">
+                )}
+                {activeTab === 'settings' && (
                   <AdminSettingsTab />
-                </TabsContent>
-              </div>
-            </Tabs>
-          </CardContent>
-        </Card>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

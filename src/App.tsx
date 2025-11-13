@@ -61,6 +61,7 @@ const App = () => (
               <Route path="referrals" element={<Referrals />} />
               <Route path="kyc" element={<KYC />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="activity" element={<ActivityLog />} />
             </Route>
             <Route path="/cryptocurrencies" element={<Cryptocurrencies />} />
             <Route path="/company/whitestones-markets" element={<WhitestonesMarkets />} />
