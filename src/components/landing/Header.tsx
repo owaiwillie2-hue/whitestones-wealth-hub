@@ -19,14 +19,14 @@ export const Header = () => {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Investments", href: "#investments" },
-    { name: "Cryptocurrencies", href: "#cryptocurrencies" },
-    { name: "Real Estate", href: "#real-estate" },
-    { name: "Oil and Gas", href: "#oil-gas" },
-    { name: "NFT", href: "#nft" },
-    { name: "Retirement", href: "#retirement" },
-    { name: "Loan", href: "#loan" },
-    { name: "Company", href: "#about" },
+    { name: "Investments", href: "/company/investments" },
+    { name: "Cryptocurrencies", href: "/cryptocurrencies" },
+    { name: "Real Estate", href: "/company/real-estate" },
+    { name: "Oil and Gas", href: "/company/oil-and-gas" },
+    { name: "NFT", href: "/company/nft" },
+    { name: "Retirement", href: "/company/retirement" },
+    { name: "Loan", href: "/company/loan" },
+    { name: "Company", href: "/company/whitestones-markets" },
   ];
 
   return (
@@ -45,19 +45,15 @@ export const Header = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
-            {navLinks.map((link) => {
-              const isHash = link.href.startsWith("#");
-              const to = isHash ? ({ pathname: "/", hash: link.href } as any) : link.href;
-              return (
-                <Link
-                  key={link.name}
-                  to={to}
-                  className="text-foreground/80 hover:text-primary transition-fast font-medium"
-                >
-                  {link.name}
-                </Link>
-              );
-            })}
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                to={link.href}
+                className="text-foreground/80 hover:text-primary transition-fast font-medium"
+              >
+                {link.name}
+              </Link>
+            ))}
           </div>
 
           <div className="hidden lg:flex items-center space-x-4">
@@ -85,20 +81,16 @@ export const Header = () => {
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
           <div className="lg:hidden mt-4 pb-4 space-y-4">
-            {navLinks.map((link) => {
-              const isHash = link.href.startsWith("#");
-              const to = isHash ? ({ pathname: "/", hash: link.href } as any) : link.href;
-              return (
-                <Link
-                  key={link.name}
-                  to={to}
-                  className="block text-foreground/80 hover:text-primary transition-fast font-medium py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {link.name}
-                </Link>
-              );
-            })}
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                to={link.href}
+                className="block text-foreground/80 hover:text-primary transition-fast font-medium py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.name}
+              </Link>
+            ))}
             <div className="space-y-2 pt-4">
               <Button asChild variant="outline" className="w-full">
                 <Link to="/login">Login</Link>
