@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import DashboardOverview from "./components/dashboard/DashboardOverview";
 import Deposit from "./pages/dashboard/Deposit";
@@ -48,6 +49,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/dashboard" element={<Dashboard />}>
               <Route index element={<DashboardOverview />} />
               <Route path="deposit" element={<Deposit />} />
