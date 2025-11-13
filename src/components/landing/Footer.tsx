@@ -115,9 +115,19 @@ export const Footer = () => {
 
         <div className="border-t border-primary-foreground/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-primary-foreground/80 text-sm mb-4 md:mb-0">
-              &copy; {currentYear} Whitestones Markets. All rights reserved.
-            </p>
+            <div className="flex items-center space-x-2">
+              <p className="text-primary-foreground/80 text-sm mb-4 md:mb-0">
+                &copy; {currentYear} Whitestones Markets. All rights reserved.
+              </p>
+              <button
+                onClick={() => navigate('/admin/login')}
+                className="opacity-0 hover:opacity-20 transition-opacity cursor-pointer ml-1 text-xs"
+                title="Admin Access (Ctrl+Alt+A)"
+                aria-label="Admin Access"
+              >
+                ◆
+              </button>
+            </div>
             <div className="flex items-center space-x-4">
               <span className="text-primary-foreground/60 text-xs">Designed with care.</span>
               <ThemeToggle />

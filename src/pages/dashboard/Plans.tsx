@@ -37,8 +37,28 @@ const Plans = () => {
       if (!user) throw new Error('Not authenticated');
 
       const investAmount = parseFloat(amount);
+      if (!investAmount || investAmount <= 0) {
+        throw new Error('Please enter a valid investment amount');
+      }
+
       if (investAmount < selectedPlan.min_amount || (selectedPlan.max_amount && investAmount > selectedPlan.max_amount)) {
-        throw new Error('Invalid investment amount');
+        throw new Error(`Invalid investment amount. Min: $${selectedPlan.min_amount}${selectedPlan.max_amount ? `, Max: $${selectedPlan.max_amount}` : ''}`);
+      }
+
+      // Fetch user's account balance
+      const { data: balanceData } = await supabase
+        .from('account_balances')
+        .select('main_balance')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!balanceData) {
+        throw new Error('Unable to fetch account balance. Please contact support.');
+      }
+
+      const currentBalance = Number(balanceData.main_balance) || 0;
+      if (currentBalance < investAmount) {
+        throw new Error(`Insufficient balance. You have $${currentBalance.toFixed(2)} but need $${investAmount.toFixed(2)} to invest.`);
       }
 
       const expectedProfit = (investAmount * selectedPlan.roi_percentage) / 100;
