@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -57,7 +58,14 @@ const Login = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
+      <Link to="/" className="absolute top-4 left-4">
+        <Button variant="outline" className="gap-2">
+          <Home className="h-4 w-4" />
+          Back to Home
+        </Button>
+      </Link>
+      
       <div className="absolute top-4 right-4">
         <select
           value={language}

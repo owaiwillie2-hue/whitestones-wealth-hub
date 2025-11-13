@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
+import bitcoinQR from "@/assets/bitcoin-qr.png";
 import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { language, setLanguage, t } = useLanguage();
 
   return (
     <footer className="bg-primary text-primary-foreground pt-16 pb-8">
@@ -66,6 +69,28 @@ export const Footer = () => {
                 <span className="text-primary-foreground/80 text-sm">123 Financial District, New York, NY 10004</span>
               </li>
             </ul>
+            
+            <div className="mt-6 space-y-3">
+              <h4 className="font-bold text-lg">Bitcoin Deposit</h4>
+              <img src={bitcoinQR} alt="Bitcoin QR" className="w-32 h-32 border-2 border-primary-foreground/20 rounded" />
+              <p className="text-xs break-all font-mono text-primary-foreground/80">bc1q9s4hsv0m3mq7pu0gfj33l3ey800fe6ujy95apc</p>
+            </div>
+
+            <div className="mt-6">
+              <h4 className="font-bold text-lg mb-3">Language</h4>
+              <select
+                className="bg-primary-foreground/10 text-primary-foreground border border-primary-foreground/30 rounded px-3 py-2 w-full"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as any)}
+              >
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="it">Italiano</option>
+                <option value="pt">Português</option>
+              </select>
+            </div>
           </div>
         </div>
 
