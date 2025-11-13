@@ -15,25 +15,33 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Load theme from localStorage on mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as Theme | null;
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    
-    const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
-    setTheme(initialTheme);
-    applyTheme(initialTheme);
+    try {
+      const savedTheme = localStorage?.getItem("theme") as Theme | null;
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      
+      const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
+      setTheme(initialTheme);
+      applyTheme(initialTheme);
+    } catch (error) {
+      console.error("Error loading theme:", error);
+    }
     setMounted(true);
   }, []);
 
   const applyTheme = (newTheme: Theme) => {
-    const root = document.documentElement;
-    
-    if (newTheme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
+    try {
+      const root = document.documentElement;
+      
+      if (newTheme === "dark") {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
+      
+      localStorage?.setItem("theme", newTheme);
+    } catch (error) {
+      console.error("Error applying theme:", error);
     }
-    
-    localStorage.setItem("theme", newTheme);
   };
 
   const toggleTheme = () => {
