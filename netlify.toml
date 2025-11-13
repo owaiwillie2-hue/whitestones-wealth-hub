@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  functions = "netlify/functions"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[context.production]
+  environment = { VITE_SUPABASE_URL = "https://elrofncgydzlvixekjxj.supabase.co", VITE_SUPABASE_PROJECT_ID = "elrofncgydzlvixekjxj", VITE_SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVscm9mbmNneWR6bHZpeGVranhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5Mzc3MDIsImV4cCI6MjA3ODUxMzcwMn0.kBf8YdXZn3cH9x-OXY0JXcP8SY03LQ_PiZpKSWT6QqQ" }
