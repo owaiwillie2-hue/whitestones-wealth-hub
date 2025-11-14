@@ -1,12 +1,41 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
-import bitcoinQR from "@/assets/bitcoin-qr.png";
-import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
+import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, Globe } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const { language, setLanguage, t } = useLanguage();
+  const { language, setLanguage } = useLanguage();
+  const [companyInfo, setCompanyInfo] = useState({
+    email: 'whitestonesmarkets@gmail.com',
+    phone: '+1 (555) 123-4567',
+    address: '123 Financial District, New York, NY 10004'
+  });
+
+  useEffect(() => {
+    fetchCompanyInfo();
+  }, []);
+
+  const fetchCompanyInfo = async () => {
+    try {
+      const { data } = await supabase
+        .from('website_settings')
+        .select('*')
+        .in('key', ['company_email', 'company_phone', 'company_address']);
+
+      if (data) {
+        const settings: any = {};
+        data.forEach(item => {
+          settings[item.key.replace('company_', '')] = item.value;
+        });
+        setCompanyInfo(prev => ({ ...prev, ...settings }));
+      }
+    } catch (error) {
+      console.error('Error fetching company info:', error);
+    }
+  };
 
   return (
     <footer className="bg-primary text-primary-foreground pt-16 pb-8">
@@ -58,30 +87,31 @@ export const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start space-x-2">
                 <Mail className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                <span className="text-primary-foreground/80 text-sm">whitestonesmarkets@gmail.com</span>
+                <span className="text-primary-foreground/80 text-sm">{companyInfo.email}</span>
               </li>
               <li className="flex items-start space-x-2">
                 <Phone className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                <span className="text-primary-foreground/80 text-sm">+1 (555) 123-4567</span>
+                <span className="text-primary-foreground/80 text-sm">{companyInfo.phone}</span>
               </li>
               <li className="flex items-start space-x-2">
                 <MapPin className="w-5 h-5 mt-0.5 flex-shrink-0" />
-                <span className="text-primary-foreground/80 text-sm">123 Financial District, New York, NY 10004</span>
+                <span className="text-primary-foreground/80 text-sm">{companyInfo.address}</span>
               </li>
             </ul>
-            
-            <div className="mt-6 space-y-3">
-              <h4 className="font-bold text-lg">Bitcoin Deposit</h4>
-              <img src={bitcoinQR} alt="Bitcoin QR" className="w-32 h-32 border-2 border-primary-foreground/20 rounded" />
-              <p className="text-xs break-all font-mono text-primary-foreground/80">bc1q9s4hsv0m3mq7pu0gfj33l3ey800fe6ujy95apc</p>
-            </div>
+          </div>
+        </div>
 
-            <div className="mt-6">
-              <h4 className="font-bold text-lg mb-3">Language</h4>
+        <div className="border-t border-primary-foreground/20 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Globe className="w-5 h-5" />
               <select
-                className="bg-primary-foreground/10 text-primary-foreground border border-primary-foreground/30 rounded px-3 py-2 w-full"
+                className="bg-primary-foreground/10 text-primary-foreground border border-primary-foreground/30 rounded px-3 py-2 min-w-[150px]"
                 value={language}
-                onChange={(e) => setLanguage(e.target.value as any)}
+                onChange={(e) => {
+                  setLanguage(e.target.value as any);
+                  window.location.reload();
+                }}
               >
                 <option value="en">English</option>
                 <option value="de">Deutsch</option>
@@ -91,25 +121,13 @@ export const Footer = () => {
                 <option value="pt">Português</option>
               </select>
             </div>
-          </div>
-        </div>
-
-        <div className="border-t border-primary-foreground/20 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-primary-foreground/80 text-sm mb-4 md:mb-0">
-              &copy; {currentYear} Whitestones Markets. All rights reserved.
+            <p className="text-primary-foreground/60 text-sm text-center md:text-right">
+              © {currentYear} Whitestones Markets. All rights reserved.
             </p>
-            <div className="flex items-center space-x-4">
-              <span className="text-primary-foreground/60 text-xs">Bitcoin Deposit Address:</span>
-              <code className="text-xs bg-primary-foreground/10 px-3 py-1 rounded">
-                bc1q9s4hsv0m3mq7pu0gfj33l3ey800fe6ujy95apc
-              </code>
-            </div>
           </div>
         </div>
 
-        {/* Hidden admin link */}
-        <Link to="/admin/login" className="opacity-0 text-[0px] pointer-events-none">Admin</Link>
+        <Link to="/admin/login" className="opacity-0 text-[0px] pointer-events-none select-none">Admin</Link>
       </div>
     </footer>
   );

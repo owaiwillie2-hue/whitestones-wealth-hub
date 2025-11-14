@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,14 +6,19 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Upload } from 'lucide-react';
+import { Upload, Camera } from 'lucide-react';
 
 const KYC = () => {
   const [kycStatus, setKycStatus] = useState<any>(null);
-  const [idFile, setIdFile] = useState<File | null>(null);
+  const [idFrontFile, setIdFrontFile] = useState<File | null>(null);
+  const [idBackFile, setIdBackFile] = useState<File | null>(null);
   const [selfieFile, setSelfieFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  const frontInputRef = useRef<HTMLInputElement>(null);
+  const backInputRef = useRef<HTMLInputElement>(null);
+  const selfieInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchKYCStatus();
@@ -34,24 +39,39 @@ const KYC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!idFile || !selfieFile) return;
+    if (!idFrontFile || !idBackFile || !selfieFile) {
+      toast({
+        title: 'Missing Documents',
+        description: 'Please upload all required documents',
+        variant: 'destructive'
+      });
+      return;
+    }
     setLoading(true);
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Upload ID document
-      const idExt = idFile.name.split('.').pop();
-      const idFileName = `${user.id}-id-${Date.now()}.${idExt}`;
-      const { error: idError } = await supabase.storage
+      // Upload ID front
+      const frontExt = idFrontFile.name.split('.').pop();
+      const frontFileName = `${user.id}/id-front-${Date.now()}.${frontExt}`;
+      const { error: frontError } = await supabase.storage
         .from('kyc-documents')
-        .upload(idFileName, idFile);
-      if (idError) throw idError;
+        .upload(frontFileName, idFrontFile);
+      if (frontError) throw frontError;
+
+      // Upload ID back
+      const backExt = idBackFile.name.split('.').pop();
+      const backFileName = `${user.id}/id-back-${Date.now()}.${backExt}`;
+      const { error: backError } = await supabase.storage
+        .from('kyc-documents')
+        .upload(backFileName, idBackFile);
+      if (backError) throw backError;
 
       // Upload selfie
       const selfieExt = selfieFile.name.split('.').pop();
-      const selfieFileName = `${user.id}-selfie-${Date.now()}.${selfieExt}`;
+      const selfieFileName = `${user.id}/selfie-${Date.now()}.${selfieExt}`;
       const { error: selfieError } = await supabase.storage
         .from('kyc-documents')
         .upload(selfieFileName, selfieFile);
@@ -60,9 +80,11 @@ const KYC = () => {
       // Save to database
       const { error } = await supabase.from('kyc_documents').upsert({
         user_id: user.id,
-        id_document_url: idFileName,
+        id_front_url: frontFileName,
+        id_back_url: backFileName,
         selfie_url: selfieFileName,
-        status: 'pending'
+        status: 'pending',
+        submitted_at: new Date().toISOString()
       });
 
       if (error) throw error;
@@ -91,7 +113,7 @@ const KYC = () => {
       approved: 'bg-green-500',
       rejected: 'bg-red-500'
     };
-    return <Badge className={colors[status] || 'bg-gray-500'}>{status}</Badge>;
+    return <Badge className={colors[status] || 'bg-gray-500'}>{status.replace('_', ' ').toUpperCase()}</Badge>;
   };
 
   return (
@@ -111,8 +133,8 @@ const KYC = () => {
           </CardHeader>
           <CardContent>
             {kycStatus.rejection_reason && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-800"><strong>Rejection Reason:</strong> {kycStatus.rejection_reason}</p>
+              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <p className="text-red-800 dark:text-red-200"><strong>Rejection Reason:</strong> {kycStatus.rejection_reason}</p>
               </div>
             )}
           </CardContent>
@@ -125,32 +147,123 @@ const KYC = () => {
             <CardTitle>Upload Documents</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="id">ID Document (Passport, National ID, or Driver's License)</Label>
-                <Input
-                  id="id"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setIdFile(e.target.files?.[0] || null)}
-                  required
-                />
+                <Label>ID Document - Front Side (Passport, National ID, or Driver's License)</Label>
+                <div className="flex gap-2">
+                  <Input
+                    ref={frontInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={(e) => setIdFrontFile(e.target.files?.[0] || null)}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => frontInputRef.current?.click()}
+                    className="flex-1"
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload Front
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      if (frontInputRef.current) {
+                        frontInputRef.current.setAttribute('capture', 'environment');
+                        frontInputRef.current.click();
+                      }
+                    }}
+                    className="flex-1"
+                  >
+                    <Camera className="mr-2 h-4 w-4" />
+                    Take Photo
+                  </Button>
+                </div>
+                {idFrontFile && <p className="text-sm text-muted-foreground">Selected: {idFrontFile.name}</p>}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="selfie">Selfie with ID</Label>
-                <Input
-                  id="selfie"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setSelfieFile(e.target.files?.[0] || null)}
-                  required
-                />
+                <Label>ID Document - Back Side</Label>
+                <div className="flex gap-2">
+                  <Input
+                    ref={backInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={(e) => setIdBackFile(e.target.files?.[0] || null)}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => backInputRef.current?.click()}
+                    className="flex-1"
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload Back
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      if (backInputRef.current) {
+                        backInputRef.current.setAttribute('capture', 'environment');
+                        backInputRef.current.click();
+                      }
+                    }}
+                    className="flex-1"
+                  >
+                    <Camera className="mr-2 h-4 w-4" />
+                    Take Photo
+                  </Button>
+                </div>
+                {idBackFile && <p className="text-sm text-muted-foreground">Selected: {idBackFile.name}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label>Selfie with ID</Label>
+                <div className="flex gap-2">
+                  <Input
+                    ref={selfieInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="user"
+                    onChange={(e) => setSelfieFile(e.target.files?.[0] || null)}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => selfieInputRef.current?.click()}
+                    className="flex-1"
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload Selfie
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      if (selfieInputRef.current) {
+                        selfieInputRef.current.setAttribute('capture', 'user');
+                        selfieInputRef.current.click();
+                      }
+                    }}
+                    className="flex-1"
+                  >
+                    <Camera className="mr-2 h-4 w-4" />
+                    Take Selfie
+                  </Button>
+                </div>
+                {selfieFile && <p className="text-sm text-muted-foreground">Selected: {selfieFile.name}</p>}
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? 'Uploading...' : 'Submit KYC Documents'}
-                <Upload className="ml-2 h-4 w-4" />
               </Button>
             </form>
           </CardContent>
