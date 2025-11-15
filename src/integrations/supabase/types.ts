@@ -163,6 +163,7 @@ export type Database = {
           end_date: string
           expected_profit: number
           id: string
+          last_profit_payout: string | null
           plan_id: string
           start_date: string | null
           status: Database["public"]["Enums"]["investment_status"] | null
@@ -175,6 +176,7 @@ export type Database = {
           end_date: string
           expected_profit: number
           id?: string
+          last_profit_payout?: string | null
           plan_id: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["investment_status"] | null
@@ -187,6 +189,7 @@ export type Database = {
           end_date?: string
           expected_profit?: number
           id?: string
+          last_profit_payout?: string | null
           plan_id?: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["investment_status"] | null
@@ -254,6 +257,8 @@ export type Database = {
           id: string
           phone_number: string | null
           profile_picture: string | null
+          two_factor_enabled: boolean | null
+          two_factor_secret: string | null
           updated_at: string | null
           user_id: string
         }
@@ -266,6 +271,8 @@ export type Database = {
           id?: string
           phone_number?: string | null
           profile_picture?: string | null
+          two_factor_enabled?: boolean | null
+          two_factor_secret?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -278,6 +285,8 @@ export type Database = {
           id?: string
           phone_number?: string | null
           profile_picture?: string | null
+          two_factor_enabled?: boolean | null
+          two_factor_secret?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -468,6 +477,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      process_investment_profits: { Args: never; Returns: undefined }
     }
     Enums: {
       account_type: "bank" | "crypto" | "paypal" | "payoneer"
