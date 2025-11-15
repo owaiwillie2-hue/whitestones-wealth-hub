@@ -19,6 +19,7 @@ const Signup = () => {
   const [phone, setPhone] = useState('');
   const [dob, setDob] = useState('');
   const [country, setCountry] = useState('');
+  const [referralCode, setReferralCode] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -45,6 +46,7 @@ const Signup = () => {
             phone_number: phone,
             date_of_birth: dob,
             country: country,
+            referral_code: referralCode,
           },
         },
       });
@@ -177,6 +179,18 @@ const Signup = () => {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="referralCode">Referral Code (Optional)</Label>
+              <Input
+                id="referralCode"
+                type="text"
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value)}
+                placeholder="Enter referral code"
+                className="mt-1"
+              />
             </div>
 
             <div className="flex items-start space-x-2">

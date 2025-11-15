@@ -205,7 +205,9 @@ export type Database = {
       kyc_documents: {
         Row: {
           id: string
+          id_back_url: string | null
           id_document_url: string | null
+          id_front_url: string | null
           rejection_reason: string | null
           reviewed_at: string | null
           reviewed_by: string | null
@@ -216,7 +218,9 @@ export type Database = {
         }
         Insert: {
           id?: string
+          id_back_url?: string | null
           id_document_url?: string | null
+          id_front_url?: string | null
           rejection_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
@@ -227,7 +231,9 @@ export type Database = {
         }
         Update: {
           id?: string
+          id_back_url?: string | null
           id_document_url?: string | null
+          id_front_url?: string | null
           rejection_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
