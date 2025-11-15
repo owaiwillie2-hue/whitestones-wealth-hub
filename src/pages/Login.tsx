@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
+import * as OTPAuth from 'otpauth';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -16,6 +18,11 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [show2FADialog, setShow2FADialog] = useState(false);
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [pendingUserId, setPendingUserId] = useState<string | null>(null);
+  const [twoFactorSecret, setTwoFactorSecret] = useState<string | null>(null);
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,22 +37,82 @@ const Login = () => {
       if (error) throw error;
 
       if (data.user) {
-        // Log activity
-        await supabase.from('activity_logs').insert({
-          user_id: data.user.id,
-          action: 'login',
-          ip_address: 'N/A',
-          user_agent: navigator.userAgent,
-        });
+        // Check if 2FA is enabled
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('two_factor_enabled, two_factor_secret')
+          .eq('user_id', data.user.id)
+          .single();
 
-        toast.success('Login successful!');
-        navigate('/dashboard');
+        if (profile?.two_factor_enabled && profile?.two_factor_secret) {
+          // Require 2FA verification
+          setPendingUserId(data.user.id);
+          setTwoFactorSecret(profile.two_factor_secret);
+          setShow2FADialog(true);
+          // Sign out temporarily until 2FA is verified
+          await supabase.auth.signOut();
+        } else {
+          // No 2FA, proceed with login
+          await completeLogin(data.user.id);
+        }
       }
     } catch (error: any) {
       toast.error(error.message || 'Login failed');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleVerify2FA = async () => {
+    if (!pendingUserId || !twoFactorSecret) return;
+
+    try {
+      // Verify the TOTP code
+      const totp = new OTPAuth.TOTP({
+        issuer: 'Whitestones Markets',
+        label: email,
+        algorithm: 'SHA1',
+        digits: 6,
+        period: 30,
+        secret: twoFactorSecret,
+      });
+
+      const isValid = totp.validate({ token: twoFactorCode, window: 1 }) !== null;
+
+      if (!isValid) {
+        toast.error('Invalid verification code');
+        return;
+      }
+
+      // Re-authenticate with password since we signed out
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        await completeLogin(data.user.id);
+        setShow2FADialog(false);
+        setTwoFactorCode('');
+      }
+    } catch (error: any) {
+      toast.error(error.message || '2FA verification failed');
+    }
+  };
+
+  const completeLogin = async (userId: string) => {
+    // Log activity
+    await supabase.from('activity_logs').insert({
+      user_id: userId,
+      action: 'login',
+      ip_address: 'N/A',
+      user_agent: navigator.userAgent,
+    });
+
+    toast.success('Login successful!');
+    navigate('/dashboard');
   };
 
   const languages = [
@@ -141,6 +208,39 @@ const Login = () => {
           </div>
         </div>
       </div>
+
+      {/* 2FA Verification Dialog */}
+      <Dialog open={show2FADialog} onOpenChange={setShow2FADialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Two-Factor Authentication</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Enter the 6-digit verification code from your authenticator app.
+            </p>
+            <div className="space-y-2">
+              <Label htmlFor="twoFactorCode">Verification Code</Label>
+              <Input
+                id="twoFactorCode"
+                type="text"
+                placeholder="000000"
+                maxLength={6}
+                value={twoFactorCode}
+                onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, ''))}
+                className="text-center text-2xl tracking-widest"
+              />
+            </div>
+            <Button 
+              onClick={handleVerify2FA}
+              className="w-full"
+              disabled={twoFactorCode.length !== 6}
+            >
+              Verify
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
